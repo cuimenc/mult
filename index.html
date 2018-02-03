@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+        <!--
+    https://developer.apple.com/library/content/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html
+	  -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="app.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+	<title>video</title>
+  <style media="screen">
+    div {
+      border: 1px solid black;
+    }
+
+    .root {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-between;
+    }
+
+    .topbar {
+      height: 40%;
+      display: flex;
+      flex-flow: row nowrap;
+    }
+
+    .actionbar {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-around;
+    }
+
+    .stat {
+      display: flex;
+      flex-flow: column nowrap;
+    }
+
+    table {
+      width: 100%;
+    }
+  </style>
+  <script type="text/javascript">
+  document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+':35729/livereload.js?snipver=1"></' + 'script>')
+  </script>
+  </head>
+  <body>
+    <div id="app" class="root" v-cloak>
+      <div class="topbar">
+        <div class="question">
+          1 x 2 = 3
+        </div>
+        <div class="stat">
+          <div class="">
+            15/2
+          </div>
+          <div class="">
+            0:12:30
+          </div>
+        </div>
+      </div>
+
+      <!-- action button -->
+      <div class="actionbar">
+        <button type="button" name="button">New</button>
+        <button type="button" name="button">Review</button>
+      </div>
+
+      <!--bottom keypad-->
+      <div class="vcontainer">
+        <table>
+          <tr v-for="row in 9">
+            <td v-for="col in 10"><button>{{(row-1) * 10 + col}}</button></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
