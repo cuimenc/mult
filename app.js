@@ -9,31 +9,6 @@ Number.prototype.pad = function(size) {
   return s;
 }
 
-let Toggle = Vue.extend({
-  template: '#vue-toggle',
-  props: ['values','selected'],
-  methods: {
-    changeSelectVal: function(index) {
-      this.$emit('update', index);
-    }
-  }
-});
-
-var jumpDuration = 5;
-
-var storage = function() {
-  this.getVal = function (key, defaultVal) {
-    var item = localStorage.getItem(key);
-    return item ? parseFloat(item) : defaultVal;
-  };
-
-  this.setVal = function (key, val) {
-    localStorage.setItem(key, val);
-  }
-};
-
-var store = new storage();
-
 var app = new Vue({
   el: '#app',
   data: {
