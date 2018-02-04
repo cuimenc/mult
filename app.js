@@ -85,7 +85,7 @@ var app = new Vue({
         this.correctCount++;
       } else if (!expected.toString().startsWith(this.answer.toString())) {
         this.wrongCount++;
-        alert(`${this.leftNum} x ${this.rightNum} = ${expected}!`);
+        alert(`${this.leftNum} x ${this.rightNum} = ${expected}`);
         this.history.push(`${this.leftNum} x ${this.rightNum} = ${this.answer}`);
       } else {
         // do nothing on partial answer
