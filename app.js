@@ -3,6 +3,12 @@ window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
   return false;
 }
 
+Number.prototype.pad = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {s = "0" + s;}
+  return s;
+}
+
 let Toggle = Vue.extend({
   template: '#vue-toggle',
   props: ['values','selected'],
@@ -12,8 +18,6 @@ let Toggle = Vue.extend({
     }
   }
 });
-
-Vue.component('vue-toggle', Toggle);
 
 var jumpDuration = 5;
 
@@ -33,78 +37,87 @@ var store = new storage();
 var app = new Vue({
   el: '#app',
   data: {
-    startTime: store.getVal('startTime', 0),
-    endTime: store.getVal('endTime', 0),
-    loop: false,
-    speedOptions: [100, 50, 25],
-    speedIndex: 0,
-    songs: store.getVal('songs', []),
-    settingView: false,
-    hideControl: true,
-    selectedSongIndex: store.getVal('selectedSongIndex', 0),
+    startTime: 0,
+    lastTime: 0,
+    correctCount: 0,
+    wrongCount: 0,
+    leftNum: 0,
+    rightNum: 0,
+    answer: 0,
+    history: [],
   },
 
   computed: {
-    videoSrc: function () {
-      return this.songs[this.selectedSongIndex];
+    duration: function () {
+      let duration = Math.round((this.lastTime - this.startTime)/1000)
+      return `${Math.round(duration/60).pad(2)}:${Math.round(duration%60).pad(2)}`;
+    },
+
+    answerText: function () {
+      return this.answer ? this.answer : "";
     },
   },
 
   methods: {
-    moveForward: function() {
-      this.$refs['video'].currentTime += jumpDuration;
+    newTest: function () {
+      this.startTime = Date.now();
+      this.lastTime = Date.now();
+      this.correctCount = 0;
+      this.wrongCount = 0;
+      this.history = [];
+
+      // fire a timer
+      this.nextQuestion();
     },
 
-    moveBackward: function() {
-      this.$refs['video'].currentTime -= jumpDuration;
+    nextQuestion: function () {
+      this.leftNum = this.nextRand();
+      this.rightNum = this.nextRand();
+      this.answer = 0;
     },
 
-    cycleSpeed: function () {
-      this.speedIndex = (this.speedIndex + 1) % this.speedOptions.length;
-      this.$refs['video'].playbackRate = this.speedOptions[this.speedIndex] / 100;
+    nextRand: function () {
+      return Math.ceil(Math.random() * 8 + 1);
     },
 
-    setStartTime: function () {
-      this.startTime = this.$refs['video'].currentTime;
-      store.setVal('startTime', this.startTime);
+    clearAnswer: function () {
+      this.answer = 0;
     },
 
-    setEndTime: function () {
-      this.endTime = this.$refs['video'].currentTime;
-      store.setVal('endTime', this.endTime);
-    },
-
-    toggleLoop: function () {
-      this.loop = !this.loop;
-      store.setVal('loop', this.loop);
-    },
-
-    onTimeUpdate: function () {
-      if (!this.loop) {
+    checkHistory: function () {
+      if (!this.history) {
         return;
       }
 
-      if (this.$refs['video'].currentTime < this.startTime || this.$refs['video'].currentTime > this.endTime) {
-        this.$refs['video'].currentTime = this.startTime;
-      }
+      alert(this.history.join('\n'));
     },
 
-    selectSong: function () {
-      this.settingView = true;
-      this.hideControl = true;
-    },
-
-    changeSong: function (index) {
-      this.settingView = false;
-
-      if (index == this.selectedSongIndex) {
+    inputKey: function (event) {
+      if (!this.startTime) {
         return;
       }
 
-      this.selectedSongIndex = index;
-      store.setVal('selectedSongIndex', index);
+      this.lastTime = Date.now();
 
-      this.$refs['video'].src = this.songs[index];
+      let val = parseInt(event.target.innerText)
+
+      // check answer
+      this.answer = this.answer * 10 + val;
+      let expected = this.leftNum * this.rightNum;
+      console.log(`this.answer=${this.answer}, expected=${expected}`);
+
+      if (this.answer == expected) {
+        this.correctCount++;
+      } else if (!expected.toString().startsWith(this.answer.toString())) {
+        this.wrongCount++;
+        alert(`${this.leftNum} x ${this.rightNum} = ${expected}!`);
+        this.history.push(`${this.leftNum} x ${this.rightNum} = ${this.answer}`);
+      } else {
+        // do nothing on partial answer
+        return;
+      }
+
+      this.nextQuestion();
     },
   }
 });
